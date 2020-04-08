@@ -39,6 +39,11 @@ public class NewOrder {
   private String quantity;
 
   /**
+   * Quote quantity.
+   */
+  private String quoteOrderQty;
+
+  /**
    * Price.
    */
   private String price;
@@ -161,6 +166,15 @@ public class NewOrder {
 
   public NewOrder quantity(String quantity) {
     this.quantity = quantity;
+    return this;
+  }
+
+  public String getQuoteOrderQty() {
+    return quoteOrderQty;
+  }
+
+  public NewOrder quoteOrderQty(String quoteOrderQty) {
+    this.quoteOrderQty = quoteOrderQty;
     return this;
   }
 
@@ -289,6 +303,7 @@ public class NewOrder {
         .append("type", type)
         .append("timeInForce", timeInForce)
         .append("quantity", quantity)
+        .append("quoteOrderQty", quoteOrderQty)
         .append("price", price)
         .append("newClientOrderId", newClientOrderId)
         .append("stopPrice", stopPrice)
