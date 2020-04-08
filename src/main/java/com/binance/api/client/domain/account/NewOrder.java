@@ -52,6 +52,21 @@ public class NewOrder {
    * Used with stop orders.
    */
   private String stopPrice;
+  
+  /**
+   * Used with OCO orders.
+   */
+  private String stopLimitPrice;
+  
+  /**
+   * Optional client id for limit leg in OCO order
+   */
+  private String limitClientOrderId;
+  
+  /**
+   * Optional client id for stop leg in OCO order
+   */
+  private String stopClientOrderId;
 
   /**
    * Used with iceberg orders.
@@ -121,6 +136,15 @@ public class NewOrder {
     this.type = type;
     return this;
   }
+  
+  public NewOrder stopLimitPrice(String price) {
+	  this.stopLimitPrice = price;
+	  return this;
+  }
+  
+  public String getStopLimitPrice() {
+	  return this.stopLimitPrice;
+  }
 
   public TimeInForce getTimeInForce() {
     return timeInForce;
@@ -155,6 +179,24 @@ public class NewOrder {
 
   public NewOrder newClientOrderId(String newClientOrderId) {
     this.newClientOrderId = newClientOrderId;
+    return this;
+  }
+  
+  public String getLimitClientOrderId() {
+    return limitClientOrderId;
+  }
+  
+  public NewOrder limitClientOrderId(String limitClientOrderId) {
+    this.limitClientOrderId = limitClientOrderId;
+    return this;
+  }
+  
+  public String getStopClientOrderId() {
+    return stopClientOrderId;
+  }
+  
+  public NewOrder stopClientOrderId(String stopClientOrderId) {
+    this.stopClientOrderId = stopClientOrderId;
     return this;
   }
 

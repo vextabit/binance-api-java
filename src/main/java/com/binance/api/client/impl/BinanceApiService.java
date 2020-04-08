@@ -7,6 +7,7 @@ import com.binance.api.client.domain.TimeInForce;
 import com.binance.api.client.domain.account.Account;
 import com.binance.api.client.domain.account.DepositAddress;
 import com.binance.api.client.domain.account.DepositHistory;
+import com.binance.api.client.domain.account.OcoOrderResponse;
 import com.binance.api.client.domain.account.NewOrderResponse;
 import com.binance.api.client.domain.account.NewOrderResponseType;
 import com.binance.api.client.domain.account.Order;
@@ -100,6 +101,7 @@ public interface BinanceApiService {
                                   @Query("icebergQty") String icebergQty, @Query("newOrderRespType") NewOrderResponseType newOrderRespType,
                                   @Query("recvWindow") Long recvWindow, @Query("timestamp") Long timestamp);
 
+
   @Headers(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
   @POST("/api/v3/order/test")
   Call<Void> newOrderTest(@Query("symbol") String symbol, @Query("side") OrderSide side, @Query("type") OrderType type,
@@ -107,6 +109,40 @@ public interface BinanceApiService {
                           @Query("newClientOrderId") String newClientOrderId, @Query("stopPrice") String stopPrice,
                           @Query("icebergQty") String icebergQty, @Query("newOrderRespType") NewOrderResponseType newOrderRespType,
                           @Query("recvWindow") Long recvWindow, @Query("timestamp") Long timestamp);
+
+  @Headers(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
+  @POST("/api/v3/order/oco")
+  Call<OcoOrderResponse> newOcoOrder(@Query("symbol") String symbol, 
+          @Query("listClientOrderId") String listClientOrderId, 
+          @Query("side") OrderSide side, 
+          @Query("quantity") String quantity, 
+          @Query("limitClientOrderId") String limitClientOrderId, 
+          @Query("price") String price,
+          @Query("limitIcebergQty") String icebergQty,
+          @Query("stopClientOrderId") String stopClientOrderId, 
+          @Query("stopPrice") String stopPrice, 
+          @Query("stopLimitPrice") String stopLimitPrice, 
+          @Query("stopLimitTimeInForce") TimeInForce stopLimitTimeInForce,
+		  @Query("newOrderRespType") NewOrderResponseType newOrderRespType,
+		  @Query("recvWindow") Long recvWindow, 
+		  @Query("timestamp") Long timestamp);
+
+  @Headers(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
+  @POST("/api/v3/order/oco/test")
+  Call<Void> newOcoOrderTest(@Query("symbol") String symbol, 
+          @Query("listClientOrderId") String listClientOrderId, 
+          @Query("side") OrderSide side, 
+          @Query("quantity") String quantity, 
+          @Query("limitClientOrderId") String limitClientOrderId, 
+          @Query("price") String price,
+          @Query("limitIcebergQty") String icebergQty,
+          @Query("stopClientOrderId") String stopClientOrderId, 
+          @Query("stopPrice") String stopPrice, 
+          @Query("stopLimitPrice") String stopLimitPrice, 
+          @Query("stopLimitTimeInForce") TimeInForce stopLimitTimeInForce,
+          @Query("newOrderRespType") NewOrderResponseType newOrderRespType,
+          @Query("recvWindow") Long recvWindow, 
+          @Query("timestamp") Long timestamp);
 
   @Headers(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
   @GET("/api/v3/order")
@@ -119,6 +155,12 @@ public interface BinanceApiService {
   Call<CancelOrderResponse> cancelOrder(@Query("symbol") String symbol, @Query("orderId") Long orderId,
                                         @Query("origClientOrderId") String origClientOrderId, @Query("newClientOrderId") String newClientOrderId,
                                         @Query("recvWindow") Long recvWindow, @Query("timestamp") Long timestamp);
+
+  @Headers(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
+  @DELETE("/api/v3/orderList")
+  Call<OcoOrderResponse> cancelOcoOrder(@Query("symbol") String symbol, @Query("orderListId") Long orderId,
+      @Query("listClientOrderId") String origClientOrderId, @Query("newClientOrderId") String newClientOrderId,
+      @Query("recvWindow") Long recvWindow, @Query("timestamp") Long timestamp);
 
   @Headers(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
   @GET("/api/v3/openOrders")

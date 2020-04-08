@@ -28,6 +28,11 @@ public class Order {
    * Client order id.
    */
   private String clientOrderId;
+  
+  /**
+   * Collective order id to which this order belongs (for OCO order legs)
+   */
+  private String orderListId;
 
   /**
    * Price.
@@ -194,6 +199,14 @@ public class Order {
 
   public void setCummulativeQuoteQty(String cummulativeQuoteQty) {
      this.cummulativeQuoteQty = cummulativeQuoteQty;
+  }
+
+  public String getOrderListId() {
+    return orderListId;
+  }
+
+  public void setOrderListId(String orderListId) {
+    this.orderListId = orderListId;
   }
 
   @Override

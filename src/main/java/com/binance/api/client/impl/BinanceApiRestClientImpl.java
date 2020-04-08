@@ -2,9 +2,12 @@ package com.binance.api.client.impl;
 
 import com.binance.api.client.BinanceApiRestClient;
 import com.binance.api.client.constant.BinanceApiConstants;
+import com.binance.api.client.domain.OrderType;
+import com.binance.api.client.domain.TimeInForce;
 import com.binance.api.client.domain.account.Account;
 import com.binance.api.client.domain.account.DepositAddress;
 import com.binance.api.client.domain.account.DepositHistory;
+import com.binance.api.client.domain.account.OcoOrderResponse;
 import com.binance.api.client.domain.account.NewOrder;
 import com.binance.api.client.domain.account.NewOrderResponse;
 import com.binance.api.client.domain.account.Order;
@@ -129,16 +132,32 @@ public class BinanceApiRestClientImpl implements BinanceApiRestClient {
 
   @Override
   public NewOrderResponse newOrder(NewOrder order) {
+    if (order.getType() == OrderType.OCO) {
+        throw new IllegalArgumentException("Please use newOcoOrder instead");
+    }
     return executeSync(binanceApiService.newOrder(order.getSymbol(), order.getSide(), order.getType(),
         order.getTimeInForce(), order.getQuantity(), order.getPrice(), order.getNewClientOrderId(), order.getStopPrice(),
         order.getIcebergQty(), order.getNewOrderRespType(), order.getRecvWindow(), order.getTimestamp()));
   }
+  
+  @Override
+  public OcoOrderResponse newOcoOrder(NewOrder order) {
+      return executeSync(binanceApiService.newOcoOrder(order.getSymbol(), order.getNewClientOrderId(), order.getSide(), order.getQuantity(), order.getLimitClientOrderId(),
+              order.getPrice(), order.getIcebergQty(), order.getStopClientOrderId(), order.getStopPrice(), order.getStopLimitPrice(), TimeInForce.GTC,
+              order.getNewOrderRespType(), order.getRecvWindow(), order.getTimestamp()));
+  }
 
   @Override
   public void newOrderTest(NewOrder order) {
-    executeSync(binanceApiService.newOrderTest(order.getSymbol(), order.getSide(), order.getType(),
-        order.getTimeInForce(), order.getQuantity(), order.getPrice(), order.getNewClientOrderId(), order.getStopPrice(),
-        order.getIcebergQty(), order.getNewOrderRespType(), order.getRecvWindow(), order.getTimestamp()));
+    if (order.getType() == OrderType.OCO) {
+        executeSync(binanceApiService.newOcoOrderTest(order.getSymbol(), order.getNewClientOrderId(), order.getSide(), order.getQuantity(), order.getLimitClientOrderId(),
+                order.getPrice(), order.getIcebergQty(), order.getStopClientOrderId(), order.getStopPrice(), order.getStopLimitPrice(), TimeInForce.GTC,
+                order.getNewOrderRespType(), order.getRecvWindow(), order.getTimestamp()));
+    } else {
+        executeSync(binanceApiService.newOrderTest(order.getSymbol(), order.getSide(), order.getType(),
+                order.getTimeInForce(), order.getQuantity(), order.getPrice(), order.getNewClientOrderId(), order.getStopPrice(),
+                order.getIcebergQty(), order.getNewOrderRespType(), order.getRecvWindow(), order.getTimestamp()));
+    }
   }
 
   // Account endpoints
@@ -153,6 +172,13 @@ public class BinanceApiRestClientImpl implements BinanceApiRestClient {
   @Override
   public CancelOrderResponse cancelOrder(CancelOrderRequest cancelOrderRequest) {
     return executeSync(binanceApiService.cancelOrder(cancelOrderRequest.getSymbol(),
+        cancelOrderRequest.getOrderId(), cancelOrderRequest.getOrigClientOrderId(), cancelOrderRequest.getNewClientOrderId(),
+        cancelOrderRequest.getRecvWindow(), cancelOrderRequest.getTimestamp()));
+  }
+
+  @Override
+  public OcoOrderResponse cancelOcoOrder(CancelOrderRequest cancelOrderRequest) {
+    return executeSync(binanceApiService.cancelOcoOrder(cancelOrderRequest.getSymbol(),
         cancelOrderRequest.getOrderId(), cancelOrderRequest.getOrigClientOrderId(), cancelOrderRequest.getNewClientOrderId(),
         cancelOrderRequest.getRecvWindow(), cancelOrderRequest.getTimestamp()));
   }
