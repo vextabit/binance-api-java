@@ -1,12 +1,10 @@
 package com.binance.api.client.domain.account;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Response returned when a new OCO order is placed.
- * 
+ *
  * @author sergey
  *
  */
@@ -20,40 +18,8 @@ public class OcoOrderResponse {
     String listClientOrderId;
     long transactionTime;
     String symbol;
-    List<OcoLeg> orders;
-    List<Order> orderReports;
-
-    public static class OcoLeg {
-
-        String symbol;
-        long orderId;
-        String clientOrderId;
-
-        public String getSymbol() {
-            return symbol;
-        }
-
-        public void setSymbol(String symbol) {
-            this.symbol = symbol;
-        }
-
-        public long getOrderId() {
-            return orderId;
-        }
-
-        public void setOrderId(long orderId) {
-            this.orderId = orderId;
-        }
-
-        public String getClientOrderId() {
-            return clientOrderId;
-        }
-
-        public void setClientOrderId(String clientOrderId) {
-            this.clientOrderId = clientOrderId;
-        }
-
-    }
+    OcoLeg[] orders;
+    Order[] orderReports;
 
     public long getOrderListId() {
         return orderListId;
@@ -111,20 +77,20 @@ public class OcoOrderResponse {
         this.symbol = symbol;
     }
 
-    public List<OcoLeg> getOrders() {
+    public OcoLeg[] getOrders() {
         return orders;
     }
 
-    public void setOrders(List<OcoLeg> orders) {
+    public void setOrders(OcoLeg[] orders) {
         this.orders = orders;
     }
 
-    public List<Order> getOrderReports() {
+    public Order[] getOrderReports() {
         return orderReports;
     }
 
-    public void setOrderReports(List<Order> orderReports) {
+    public void setOrderReports(Order[] orderReports) {
         this.orderReports = orderReports;
     }
-    
+
 }

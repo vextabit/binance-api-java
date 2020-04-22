@@ -1,9 +1,13 @@
 package com.binance.api.client.impl;
 
+import java.io.Closeable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.binance.api.client.BinanceApiCallback;
 import com.binance.api.client.BinanceApiWebSocketClient;
 import com.binance.api.client.config.BinanceApiConfig;
-import com.binance.api.client.constant.BinanceApiConstants;
 import com.binance.api.client.domain.event.AggTradeEvent;
 import com.binance.api.client.domain.event.AllMarketTickersEvent;
 import com.binance.api.client.domain.event.CandlestickEvent;
@@ -16,11 +20,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;
-
-import java.io.Closeable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Binance API WebSocket client implementation using OkHttp.
@@ -51,6 +50,7 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
         return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, CandlestickEvent.class));
     }
 
+    @Override
     public Closeable onAggTradeEvent(String symbols, BinanceApiCallback<AggTradeEvent> callback) {
         final String channel = Arrays.stream(symbols.split(","))
                 .map(String::trim)
@@ -58,7 +58,7 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
                 .collect(Collectors.joining("/"));
         return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, AggTradeEvent.class));
     }
-    
+
     @Override
     public Closeable onTradeEvent(String symbols, BinanceApiCallback<TradeEvent> callback) {
       final String channel = Arrays.stream(symbols.split(","))
@@ -68,10 +68,12 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
       return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, TradeEvent.class));
     }
 
+    @Override
     public Closeable onUserDataUpdateEvent(String listenKey, BinanceApiCallback<UserDataUpdateEvent> callback) {
         return createNewWebSocket(listenKey, new BinanceApiWebSocketListener<>(callback, UserDataUpdateEvent.class));
     }
 
+    @Override
     public Closeable onAllMarketTickersEvent(BinanceApiCallback<List<AllMarketTickersEvent>> callback) {
         final String channel = "!ticker@arr";
         return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, new TypeReference<List<AllMarketTickersEvent>>() {}));
@@ -80,6 +82,7 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
     /**
      * @deprecated This method is no longer functional. Please use the returned {@link Closeable} from any of the other methods to close the web socket.
      */
+    @Deprecated
     @Override
     public void close() { }
 

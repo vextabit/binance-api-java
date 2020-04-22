@@ -519,5 +519,21 @@ Invalid symbol
 ```
 </details>
 
+### OCO trades
+
+This API wrapper also supports placing OCO (one cancels the other) trade orders. Look for ``oco`` in the API interfaces for creating, canceling and watching for updates to the OCO orders.
+
+#### Example of an OCO buy order
+
+```java
+NewOrder buy = NewOrder.ocoBuy("XRPBTC", "5", "0.00002675", "0.00002800", "0.00002840");
+/*
+ * Not required but easier to use than auto-generated binance ids. You can use
+ * this id to both cancel the order and get its status.
+ */
+buy.newClientOrderId(UUID.randomUUID().toString());
+OcoOrderResponse order = client.newOcoOrder(buy);
+```
+
 ### More examples
 An extensive set of examples, covering most aspects of the API, can be found at https://github.com/joaopsilva/binance-java-api/tree/master/src/test/java/com/binance/api/examples.
