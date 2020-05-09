@@ -1,8 +1,9 @@
 package com.binance.api.client.domain.account.request;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.binance.api.client.constant.BinanceApiConstants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Response object returned when an order is canceled.
@@ -46,6 +47,14 @@ public class CancelOrderResponse {
   }
   public String getExecutedQty() {
     return executedQty;
+  }
+
+  public void setExecutedQty(String executedQty) {
+    this.executedQty = executedQty;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
   public String getOrderId() {
