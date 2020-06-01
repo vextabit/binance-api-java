@@ -348,16 +348,17 @@ public class NewOrder {
         .append("symbol", symbol)
         .append("side", side)
         .append("type", type)
-        .append("timeInForce", timeInForce)
+        .append("price", price)
+        .append("stopLimitPrice", stopLimitPrice)
+        .append("stopPrice", stopPrice)
         .append("quantity", quantity)
         .append("quoteOrderQty", quoteOrderQty)
-        .append("price", price)
         .append("newClientOrderId", newClientOrderId)
-        .append("stopPrice", stopPrice)
         .append("icebergQty", icebergQty)
         .append("newOrderRespType", newOrderRespType)
         .append("recvWindow", recvWindow)
         .append("timestamp", timestamp)
+        .append("timeInForce", timeInForce)
         .toString();
   }
 }
