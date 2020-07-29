@@ -33,4 +33,5 @@ public enum CandlestickInterval {
   public String getIntervalId() {
     return intervalId;
   }
+
 }
