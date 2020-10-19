@@ -49,4 +49,9 @@ public class BinanceApiConfig {
 		return String.format("https://%s/", getBaseDomain());
 	}
 
+	/**
+	 * Set this system property to <code>true</code> to enable HTTP payloads logging
+	 */
+  public static final String BINANCE_API_LOGGING_ENABLED = "binance.api.logging.enabled";
+
 }

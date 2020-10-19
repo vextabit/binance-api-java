@@ -1,24 +1,29 @@
 package com.binance.api.client.impl;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.binance.api.client.BinanceApiError;
 import com.binance.api.client.config.BinanceApiConfig;
-import com.binance.api.client.constant.BinanceApiConstants;
 import com.binance.api.client.exception.BinanceApiException;
 import com.binance.api.client.security.AuthenticationInterceptor;
+
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
+import okhttp3.OkHttpClient.Builder;
 import okhttp3.ResponseBody;
-import org.apache.commons.lang3.StringUtils;
+import okhttp3.logging.HttpLoggingInterceptor;
+import okhttp3.logging.HttpLoggingInterceptor.Level;
 import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Generates a Binance API implementation based on @see {@link BinanceApiService}.
@@ -32,10 +37,23 @@ public class BinanceApiServiceGenerator {
         Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequestsPerHost(500);
         dispatcher.setMaxRequests(500);
-        sharedClient = new OkHttpClient.Builder()
+        Builder builder = new OkHttpClient.Builder()
                 .dispatcher(dispatcher)
-                .pingInterval(20, TimeUnit.SECONDS)
-                .build();
+                .pingInterval(20, TimeUnit.SECONDS);
+        if (Boolean.getBoolean(BinanceApiConfig.BINANCE_API_LOGGING_ENABLED)) {
+          Logger lg = LoggerFactory.getLogger(BinanceApiService.class);
+          HttpLoggingInterceptor logger = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+
+
+            @Override
+            public void log(String message) {
+              lg.info(message);
+            }
+          });
+          logger.setLevel(Level.BODY);
+          builder.addInterceptor(logger);
+        }
+        sharedClient = builder.build();
     }
 
     @SuppressWarnings("unchecked")

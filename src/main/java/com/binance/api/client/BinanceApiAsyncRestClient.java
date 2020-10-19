@@ -1,10 +1,13 @@
 package com.binance.api.client;
 
+import java.util.List;
+
 import com.binance.api.client.domain.account.Account;
 import com.binance.api.client.domain.account.DepositAddress;
 import com.binance.api.client.domain.account.DepositHistory;
 import com.binance.api.client.domain.account.NewOrder;
 import com.binance.api.client.domain.account.NewOrderResponse;
+import com.binance.api.client.domain.account.OcoOrderResponse;
 import com.binance.api.client.domain.account.Order;
 import com.binance.api.client.domain.account.Trade;
 import com.binance.api.client.domain.account.TradeHistoryItem;
@@ -26,8 +29,6 @@ import com.binance.api.client.domain.market.CandlestickInterval;
 import com.binance.api.client.domain.market.OrderBook;
 import com.binance.api.client.domain.market.TickerPrice;
 import com.binance.api.client.domain.market.TickerStatistics;
-
-import java.util.List;
 
 /**
  * Binance API facade, supporting asynchronous/non-blocking access Binance's REST API.
@@ -136,10 +137,10 @@ public interface BinanceApiAsyncRestClient {
    * @param callback the callback that handles the response
    */
   void get24HrPriceStatistics(String symbol, BinanceApiCallback<TickerStatistics> callback);
-  
+
   /**
    * Get 24 hour price change statistics for all symbols (asynchronous).
-   * 
+   *
    * @param callback the callback that handles the response
    */
    void getAll24HrPriceStatistics(BinanceApiCallback<List<TickerStatistics>> callback);
@@ -150,10 +151,10 @@ public interface BinanceApiAsyncRestClient {
    * @param callback the callback that handles the response
    */
   void getAllPrices(BinanceApiCallback<List<TickerPrice>> callback);
-  
+
   /**
    * Get latest price for <code>symbol</code> (asynchronous).
-   * 
+   *
    * @param symbol ticker symbol (e.g. ETHBTC)
    * @param callback the callback that handles the response
    */
@@ -175,6 +176,14 @@ public interface BinanceApiAsyncRestClient {
    * @param callback the callback that handles the response
    */
   void newOrder(NewOrder order, BinanceApiCallback<NewOrderResponse> callback);
+
+  /**
+   * Send in a new OCO order.
+   *
+   * @param order the new order to submit.
+   * @param callback the callback that handles the response.
+   */
+  void newOcoOrder(NewOrder order, BinanceApiCallback<OcoOrderResponse> callback);
 
   /**
    * Test new order creation and signature/recvWindow long. Creates and validates a new order but does not send it into the matching engine.
@@ -199,6 +208,14 @@ public interface BinanceApiAsyncRestClient {
    * @param callback the callback that handles the response
    */
   void cancelOrder(CancelOrderRequest cancelOrderRequest, BinanceApiCallback<CancelOrderResponse> callback);
+
+  /**
+   * Cancel an active order (asynchronous).
+   *
+   * @param cancelOrderRequest order status request parameters
+   * @param callback the callback that handles the response
+   */
+  void cancelOcoOrder(CancelOrderRequest cancelOrderRequest, BinanceApiCallback<OcoOrderResponse> callback);
 
   /**
    * Get all open orders on a symbol (asynchronous).
