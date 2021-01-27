@@ -73,7 +73,7 @@ public class CancelOrderResponse {
     this.clientOrderId = clientOrderId;
     return this;
   }
-
+  
   @Override
   public String toString() {
     return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)

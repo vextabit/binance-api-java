@@ -11,10 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * Symbol information (base/quote).
  */
-/**
- * @author sergey
- *
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SymbolInfo {
 
