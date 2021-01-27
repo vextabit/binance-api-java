@@ -23,9 +23,11 @@ pipeline {
     stages {
         stage('Build & Deploy SNAPSHOT') {
            steps {
+              script {                  
             	deploy
-            }
-            post {
+              }
+           }
+           post {
                 success {
                     junit 'target/surefire-reports/**/*.xml'
                 }
