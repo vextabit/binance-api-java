@@ -1,14 +1,19 @@
 package com.binance.api.client.domain.general;
 
+import java.util.List;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.binance.api.client.constant.BinanceApiConstants;
 import com.binance.api.client.domain.OrderType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import java.util.List;
 
 /**
  * Symbol information (base/quote).
+ */
+/**
+ * @author sergey
+ *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SymbolInfo {
@@ -28,6 +33,12 @@ public class SymbolInfo {
   private List<OrderType> orderTypes;
 
   private boolean icebergAllowed;
+
+  private boolean ocoAllowed;
+
+  private boolean isSpotTradingAllowed;
+
+  private boolean isMarginTradingAllowed;
 
   private List<SymbolFilter> filters;
 
@@ -128,4 +139,30 @@ public class SymbolInfo {
         .append("filters", filters)
         .toString();
   }
+
+  public boolean isOcoAllowed() {
+    return ocoAllowed;
+  }
+
+  public void setOcoAllowed(boolean ocoAllowed) {
+    this.ocoAllowed = ocoAllowed;
+  }
+
+  public boolean isSpotTradingAllowed() {
+    return isSpotTradingAllowed;
+  }
+
+  public void setSpotTradingAllowed(boolean isSpotTradingAllowed) {
+    this.isSpotTradingAllowed = isSpotTradingAllowed;
+  }
+
+  public boolean isMarginTradingAllowed() {
+    return isMarginTradingAllowed;
+  }
+
+  public void setMarginTradingAllowed(boolean isMarginTradingAllowed) {
+    this.isMarginTradingAllowed = isMarginTradingAllowed;
+  }
+
+
 }
