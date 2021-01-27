@@ -21,9 +21,9 @@ pipeline {
             defaultValue: false)
     }
     stages {
-        stage('Build') {
+        stage('Build & Deploy SNAPSHOT') {
            steps {
-            	sh 'mvn clean install'
+            	deploy
             }
             post {
                 success {
