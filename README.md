@@ -535,5 +535,7 @@ buy.newClientOrderId(UUID.randomUUID().toString());
 OcoOrderResponse order = client.newOcoOrder(buy);
 ```
 
+*WATCH OUT*. newClientOrderId is your identifier of the two-leg trade. In order to distinguish between limit_maker and stop_loss part you need to set individual client ids for these legs at creation time (limitClientOrderId, stopClientOrderId). Beware however that when an oco stop happens the limit_maker leg order update will come without your client id, it will only contain binance generated numeric orderId (which you can re-query and get your clientOrderId anyway). This is the case with all cancel events - they will not have your own id, but binance orderId instead.
+
 ### More examples
 An extensive set of examples, covering most aspects of the API, can be found at https://github.com/joaopsilva/binance-java-api/tree/master/src/test/java/com/binance/api/examples.
