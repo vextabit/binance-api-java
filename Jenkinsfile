@@ -23,9 +23,7 @@ pipeline {
     stages {
         stage('Build & Deploy SNAPSHOT') {
            steps {
-              script {                  
-            	deploy
-              }
+              deploy()
            }
            post {
                 success {
