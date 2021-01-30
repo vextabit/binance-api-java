@@ -10,10 +10,6 @@ pipeline {
 	    disableConcurrentBuilds()
 	}
 	
-	triggers {
-	    pollSCM('')
-	}
-	
     parameters {
         booleanParam(
             name: "RELEASE",
