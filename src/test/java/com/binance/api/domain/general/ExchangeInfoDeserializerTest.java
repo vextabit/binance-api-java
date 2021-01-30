@@ -1,8 +1,21 @@
 package com.binance.api.domain.general;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+
 import com.binance.api.client.domain.OrderType;
 import com.binance.api.client.domain.general.ExchangeInfo;
 import com.binance.api.client.domain.general.FilterType;
+import com.binance.api.client.domain.general.LotSizeFilter;
+import com.binance.api.client.domain.general.MinNotionalFilter;
+import com.binance.api.client.domain.general.PriceFilter;
 import com.binance.api.client.domain.general.RateLimit;
 import com.binance.api.client.domain.general.RateLimitInterval;
 import com.binance.api.client.domain.general.RateLimitType;
@@ -10,15 +23,6 @@ import com.binance.api.client.domain.general.SymbolFilter;
 import com.binance.api.client.domain.general.SymbolInfo;
 import com.binance.api.client.domain.general.SymbolStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 /**
  * Test deserialization of exchange information.
@@ -100,19 +104,20 @@ public class ExchangeInfoDeserializerTest {
       List<SymbolFilter> symbolFilters = symbolInfo.getFilters();
       assertEquals(symbolFilters.size(), 3);
 
-      SymbolFilter priceFilter = symbolFilters.get(0);
+      PriceFilter priceFilter = (PriceFilter) symbolFilters.get(0);
       assertEquals(priceFilter.getFilterType(), FilterType.PRICE_FILTER);
+
       assertEquals(priceFilter.getMinPrice(), "0.00000100");
       assertEquals(priceFilter.getMaxPrice(), "100000.00000000");
       assertEquals(priceFilter.getTickSize(), "0.00000100");
 
-      SymbolFilter lotSizeFilter = symbolFilters.get(1);
+      LotSizeFilter lotSizeFilter = (LotSizeFilter) symbolFilters.get(1);
       assertEquals(lotSizeFilter.getFilterType(), FilterType.LOT_SIZE);
       assertEquals(lotSizeFilter.getMinQty(), "0.00100000");
       assertEquals(lotSizeFilter.getMaxQty(), "100000.00000000");
       assertEquals(lotSizeFilter.getStepSize(), "0.00100000");
 
-      SymbolFilter minNotionalFilter = symbolFilters.get(2);
+      MinNotionalFilter minNotionalFilter = (MinNotionalFilter) symbolFilters.get(2);
       assertEquals(minNotionalFilter.getFilterType(), FilterType.MIN_NOTIONAL);
       assertEquals(minNotionalFilter.getMinNotional(), "0.00100000");
     } catch (IOException e) {

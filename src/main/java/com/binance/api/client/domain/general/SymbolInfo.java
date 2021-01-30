@@ -121,6 +121,14 @@ public class SymbolInfo {
         .get();
   }
 
+  public <T extends SymbolFilter> T getSymbolFilter(Class<T> filterType) {
+    return filters.stream()
+        .filter(symbolFilter -> symbolFilter.getClass() == filterType)
+        .map(filterType::cast)
+        .findFirst()
+        .get();
+  }
+
   @Override
   public String toString() {
     return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
