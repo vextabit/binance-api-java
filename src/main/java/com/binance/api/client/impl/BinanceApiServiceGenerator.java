@@ -53,6 +53,7 @@ public class BinanceApiServiceGenerator {
           logger.setLevel(Level.BODY);
           builder.addInterceptor(logger);
         }
+        builder.addInterceptor(new RequestRateLimitingInterceptor());
         sharedClient = builder.build();
     }
 
