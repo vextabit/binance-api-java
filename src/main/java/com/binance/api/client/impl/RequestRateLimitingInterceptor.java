@@ -58,6 +58,7 @@ public class RequestRateLimitingInterceptor implements Interceptor {
     Response response = chain.proceed(request);
     if (response.code() == 418 || response.code() == 429) {
       try {
+        response.close();
         log.warn("reached request weight limit, retrying after {}", response.header("retry-after"));
         sleep(parseInt(response.header("retry-after")) * 1000);
         response = chain.proceed(request);
