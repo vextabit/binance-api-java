@@ -2,12 +2,14 @@ package com.binance.api.client.domain.account.request;
 
 import com.binance.api.client.constant.BinanceApiConstants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import lombok.ToString;
 
 /**
  * Base request parameters for order-related methods.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
 public class OrderRequest {
 
   private final String symbol;
@@ -44,12 +46,4 @@ public class OrderRequest {
     return this;
   }
 
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-        .append("symbol", symbol)
-        .append("recvWindow", recvWindow)
-        .append("timestamp", timestamp)
-        .toString();
-  }
 }

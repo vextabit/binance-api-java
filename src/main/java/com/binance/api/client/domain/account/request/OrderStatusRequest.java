@@ -1,11 +1,11 @@
 package com.binance.api.client.domain.account.request;
 
-import com.binance.api.client.constant.BinanceApiConstants;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import lombok.ToString;
 
 /**
  * A specialized order request with additional filters.
  */
+@ToString
 public class OrderStatusRequest extends OrderRequest {
 
   private Long orderId;
@@ -40,11 +40,4 @@ public class OrderStatusRequest extends OrderRequest {
     return this;
   }
 
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-        .append("orderId", orderId)
-        .append("origClientOrderId", origClientOrderId)
-        .toString();
-  }
 }
