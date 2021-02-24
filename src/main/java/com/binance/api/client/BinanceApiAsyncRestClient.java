@@ -5,6 +5,7 @@ import java.util.List;
 import com.binance.api.client.domain.account.Account;
 import com.binance.api.client.domain.account.DepositAddress;
 import com.binance.api.client.domain.account.DepositHistory;
+import com.binance.api.client.domain.account.DustTransferResponse;
 import com.binance.api.client.domain.account.NewOrder;
 import com.binance.api.client.domain.account.NewOrderResponse;
 import com.binance.api.client.domain.account.OcoOrderResponse;
@@ -328,4 +329,12 @@ public interface BinanceApiAsyncRestClient {
    * @param callback the callback that handles the response which contains a listenKey
    */
   void closeUserDataStream(String listenKey, BinanceApiCallback<Void> callback);
+
+  /**
+   * Converts tiny amounts of coins to BNB.
+   *
+   * @param assets the assets you wish to exchange for BNBs
+   * @param callback the callback that handles the response
+   */
+  void convertDustToBnb(List<String> assets, BinanceApiCallback<DustTransferResponse> callback);
 }

@@ -264,6 +264,17 @@ DepositAddress[address=0x99...,success=true,addressTag=,asset=ETH]
 ```
 </details>
 
+#### Convert tiny amounts to BNB
+
+There are cases when amount of coin on balance is too small to trade it. It is possible however to exchange these "dust" amounts for BNB, which can be used to pay reduced commission fees. In order to do so choose your assets and call the
+
+```java
+DustTransferResponse response = client.convertDustToBnb(Arrays.asList("ONE", "XRP"));
+
+```
+
+
+
 ### User stream endpoints
 
 #### Start user data stream, keepalive, and close data stream

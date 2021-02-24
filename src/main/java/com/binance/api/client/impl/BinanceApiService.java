@@ -10,6 +10,7 @@ import com.binance.api.client.domain.TimeInForce;
 import com.binance.api.client.domain.account.Account;
 import com.binance.api.client.domain.account.DepositAddress;
 import com.binance.api.client.domain.account.DepositHistory;
+import com.binance.api.client.domain.account.DustTransferResponse;
 import com.binance.api.client.domain.account.Liquidity;
 import com.binance.api.client.domain.account.LiquidityOperationRecord;
 import com.binance.api.client.domain.account.LoanQueryResult;
@@ -376,6 +377,13 @@ public interface BinanceApiService {
   @GET("/sapi/v1/bswap/swap")
   Call<List<SwapHistory>> getSwapHistory(
           @Query("swapId") String swapId,
+          @Query("recvWindow") Long recvWindow,
+          @Query("timestamp") Long timestamp);
+
+  @Headers({BinanceApiConstants.ENDPOINT_SECURITY_TYPE_APIKEY_HEADER, BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER})
+  @POST("/sapi/v1/asset/dust")
+  Call<DustTransferResponse> dustTransfer(
+          @Query("asset") List<String> assets,
           @Query("recvWindow") Long recvWindow,
           @Query("timestamp") Long timestamp);
 

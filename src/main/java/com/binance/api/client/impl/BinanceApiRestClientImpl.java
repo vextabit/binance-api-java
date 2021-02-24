@@ -2,6 +2,7 @@ package com.binance.api.client.impl;
 
 import static com.binance.api.client.impl.BinanceApiServiceGenerator.createService;
 import static com.binance.api.client.impl.BinanceApiServiceGenerator.executeSync;
+import static java.lang.System.currentTimeMillis;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import com.binance.api.client.domain.TimeInForce;
 import com.binance.api.client.domain.account.Account;
 import com.binance.api.client.domain.account.DepositAddress;
 import com.binance.api.client.domain.account.DepositHistory;
+import com.binance.api.client.domain.account.DustTransferResponse;
 import com.binance.api.client.domain.account.NewOrder;
 import com.binance.api.client.domain.account.NewOrderResponse;
 import com.binance.api.client.domain.account.OcoOrderResponse;
@@ -258,6 +260,11 @@ public class BinanceApiRestClientImpl implements BinanceApiRestClient {
   @Override
   public DepositAddress getDepositAddress(String asset) {
     return executeSync(binanceApiService.getDepositAddress(asset, BinanceApiConstants.DEFAULT_RECEIVING_WINDOW, System.currentTimeMillis()));
+  }
+
+  @Override
+  public DustTransferResponse convertDustToBnb(List<String> assets) {
+    return executeSync(binanceApiService.dustTransfer(assets, BinanceApiConstants.DEFAULT_RECEIVING_WINDOW, currentTimeMillis()));
   }
 
   // User stream endpoints
