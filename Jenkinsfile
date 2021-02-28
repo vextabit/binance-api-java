@@ -33,9 +33,10 @@ pipeline {
                 branch 'master'
             }
             steps {
-                script {                    
+                script {
                     version = release()
                     echo "Released binance-java-api version ${version}"
+                    currentBuild.displayName = version
                 }
             }
         }

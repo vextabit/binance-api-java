@@ -3,6 +3,7 @@ package com.binance.api.client.security;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.asynchttpclient.Header;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.RequestBuilderBase;
@@ -27,8 +28,18 @@ public class AuthenticationInterceptor implements Consumer<RequestBuilder>, Sign
 
   @Override
   public void accept(RequestBuilder request) {
-    request.addHeader(BinanceApiConstants.API_KEY_HEADER, apiKey);
-    request.setSignatureCalculator(this);
+    boolean isApiKeyRequired = Header.get(request, BinanceApiConstants.ENDPOINT_SECURITY_TYPE_APIKEY) != null;
+    boolean isSignatureRequired = Header.get(request, BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED) != null;
+    Header.remove(request, BinanceApiConstants.ENDPOINT_SECURITY_TYPE_APIKEY);
+    Header.remove(request, BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED);
+
+    // Endpoint requires sending a valid API-KEY
+    if (isApiKeyRequired || isSignatureRequired) {
+      request.addHeader(BinanceApiConstants.API_KEY_HEADER, apiKey);
+    }
+    if (isSignatureRequired) {
+      request.setSignatureCalculator(this);
+    }
   }
 
   @Override
