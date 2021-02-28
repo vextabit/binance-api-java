@@ -6,6 +6,7 @@ binance-java-api is a lightweight Java library for interacting with the [Binance
 * Support for synchronous and asynchronous REST requests to all [General](https://www.binance.com/restapipub.html#user-content-general-endpoints), [Market Data](https://www.binance.com/restapipub.html#user-content-market-data-endpoints), [Account](https://www.binance.com/restapipub.html#user-content-account-endpoints) endpoints, and [User](https://www.binance.com/restapipub.html#user-content-user-data-stream-endpoints) stream endpoints.
 * Support for User Data, Trade, Kline, and Depth event streaming using [Binance WebSocket API](https://www.binance.com/restapipub.html#wss-endpoint).
 * Implements a simple request rate limiter to prevent your application from getting an IP ban in case you send too many requests too fast.
+* Uses Netty as HTTP client and will automatically switch to Epoll event loop if available on the classpath for your platform.
 
 ## Installation
 1. Install library into your Maven's local repository by running `mvn install`
