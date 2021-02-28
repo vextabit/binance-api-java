@@ -14,7 +14,10 @@ import com.binance.api.client.exception.BinanceApiException;
 import com.binance.api.client.security.AuthenticationInterceptor;
 
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Converter;
@@ -26,6 +29,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
  * Generates a Binance API implementation based on @see
  * {@link BinanceApiService}.
  */
+@Slf4j
 public class BinanceApiServiceGenerator {
 
   private static final Converter.Factory converterFactory = JacksonConverterFactory.create();
@@ -33,13 +37,23 @@ public class BinanceApiServiceGenerator {
 
   static {
     RequestRateLimitingInterceptor rateLimiter = new RequestRateLimitingInterceptor();
+
+    EventLoopGroup eventLoopGroup;
+    try {
+      eventLoopGroup = new EpollEventLoopGroup(Runtime.getRuntime().availableProcessors());
+      log.info("using epoll netty http event loop");
+    } catch (UnsatisfiedLinkError e) {
+      eventLoopGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
+      log.info("using nio netty http event loop");
+    }
+
     sharedClient = Dsl.asyncHttpClient(new Builder().setKeepAlive(true)
 
         .setUseNativeTransport(true)
 
-        .setEventLoopGroup(new NioEventLoopGroup(Runtime.getRuntime().availableProcessors()))
+        .setEventLoopGroup(eventLoopGroup)
 
-        .addChannelOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, Integer.getInteger("binance.api.connectio.timeout.millis", 20000))
+        .addChannelOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, Integer.getInteger("binance.api.connection.timeout.millis", 20000))
 
         .setMaxConnectionsPerHost(Integer.getInteger("binance.api.max.connections.per.host", 500))
 
