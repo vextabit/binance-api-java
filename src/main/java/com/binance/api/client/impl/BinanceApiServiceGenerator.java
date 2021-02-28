@@ -2,98 +2,101 @@ package com.binance.api.client.impl;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.concurrent.TimeUnit;
 
-import org.asynchttpclient.DefaultAsyncHttpClientConfig;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig.Builder;
 import org.asynchttpclient.Dsl;
-import org.asynchttpclient.filter.FilterContext;
-import org.asynchttpclient.filter.FilterException;
-import org.asynchttpclient.filter.RequestFilter;
+import org.asynchttpclient.extras.retrofit.AsyncHttpClientCallFactory;
 
 import com.binance.api.client.BinanceApiError;
 import com.binance.api.client.config.BinanceApiConfig;
 import com.binance.api.client.exception.BinanceApiException;
 import com.binance.api.client.security.AuthenticationInterceptor;
 
-import okhttp3.Dispatcher;
-import okhttp3.OkHttpClient;
-import okhttp3.OkHttpClient.Builder;
+import io.netty.channel.ChannelOption;
 import okhttp3.ResponseBody;
-import ratpack.retrofit.RatpackRetrofit;
 import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 /**
- * Generates a Binance API implementation based on @see {@link BinanceApiService}.
+ * Generates a Binance API implementation based on @see
+ * {@link BinanceApiService}.
  */
 public class BinanceApiServiceGenerator {
 
-    private static final Converter.Factory converterFactory = JacksonConverterFactory.create();
-    private static OkHttpClient sharedClient;
+  private static final Converter.Factory converterFactory = JacksonConverterFactory.create();
+  private static AsyncHttpClient sharedClient;
 
-    static {
-      Dsl.asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().addRequestFilter(new RequestFilter() {
-        
-        @Override
-        public <T> FilterContext<T> filter(FilterContext<T> ctx) throws FilterException {
-          return ctx;
-        }
-      }));
-      
-        Dispatcher dispatcher = new Dispatcher();
-        dispatcher.setMaxRequestsPerHost(500);
-        dispatcher.setMaxRequests(500);
-        Builder builder = new OkHttpClient.Builder()
-                .dispatcher(dispatcher)
-                .pingInterval(20, TimeUnit.SECONDS);
-        builder.addInterceptor(new RequestRateLimitingInterceptor());
-        sharedClient = builder.build();
+  static {
+    RequestRateLimitingInterceptor rateLimiter = new RequestRateLimitingInterceptor();
+    sharedClient = Dsl.asyncHttpClient(new Builder().setKeepAlive(true)
+
+        .addChannelOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, Integer.getInteger("binance.api.connectio.timeout.millis", 20000))
+
+        .setMaxConnectionsPerHost(Integer.getInteger("binance.api.max.connections.per.host", 500))
+
+        .setWebSocketMaxBufferSize(Integer.getInteger("binance.api.ws.buffer.size", 65536))
+
+        .setWebSocketMaxFrameSize(Integer.getInteger("binance.api.ws.frame.size", 65536))
+
+        .addRequestFilter(rateLimiter::request).addResponseFilter(rateLimiter::response)
+
+        .build());
+  }
+
+  @SuppressWarnings("unchecked")
+  private static final Converter<ResponseBody, BinanceApiError> errorBodyConverter = (Converter<ResponseBody, BinanceApiError>) converterFactory
+      .responseBodyConverter(BinanceApiError.class, new Annotation[0], null);
+
+  public static <S> S createService(Class<S> serviceClass, String apiKey, String secret) {
+    AuthenticationInterceptor authenticationInterceptor = new AuthenticationInterceptor(apiKey, secret);
+    AsyncHttpClientCallFactory ahccf = AsyncHttpClientCallFactory.builder()
+
+        .httpClient(sharedClient)
+
+        .callCustomizer(callBuilder -> callBuilder.requestCustomizer(authenticationInterceptor))
+
+        .build();
+
+    Retrofit retrofit = new Retrofit.Builder()
+
+        .baseUrl(BinanceApiConfig.getApiBaseUrl())
+
+        .callFactory(ahccf)
+
+        .addConverterFactory(converterFactory).build();
+    return retrofit.create(serviceClass);
+  }
+
+  /**
+   * Execute a REST call and block until the response is received.
+   */
+  public static <T> T executeSync(Call<T> call) {
+    try {
+      Response<T> response = call.execute();
+      if (response.isSuccessful()) {
+        return response.body();
+      } else {
+        BinanceApiError apiError = getBinanceApiError(response);
+        throw new BinanceApiException(apiError);
+      }
+    } catch (IOException e) {
+      throw new BinanceApiException(e);
     }
+  }
 
-    @SuppressWarnings("unchecked")
-    private static final Converter<ResponseBody, BinanceApiError> errorBodyConverter =
-            (Converter<ResponseBody, BinanceApiError>)converterFactory.responseBodyConverter(
-                    BinanceApiError.class, new Annotation[0], null);
+  /**
+   * Extracts and converts the response error body into an object.
+   */
+  public static BinanceApiError getBinanceApiError(Response<?> response) throws IOException, BinanceApiException {
+    return errorBodyConverter.convert(response.errorBody());
+  }
 
-    public static <S> S createService(Class<S> serviceClass, String apiKey, String secret) {
-      
-      return RatpackRetrofit.client(BinanceApiConfig.getApiBaseUrl()).configure(builder -> {
-        builder.addConverterFactory(converterFactory);
-      }).build(serviceClass);
-//        // `adaptedClient` will use its own interceptor, but share thread pool etc with
-//        // the 'parent' client
-        AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiKey, secret);
-//        OkHttpClient adaptedClient = sharedClient.newBuilder().addInterceptor(interceptor).build();
-//        retrofitBuilder.client(adaptedClient);
-//
-//      Retrofit retrofit = retrofitBuilder.build();
-//      return retrofit.create(serviceClass);
-    }
-
-    /**
-     * Execute a REST call and block until the response is received.
-     */
-    public static <T> T executeSync(Call<T> call) {
-        try {
-            Response<T> response = call.execute();
-            if (response.isSuccessful()) {
-                return response.body();
-            } else {
-                BinanceApiError apiError = getBinanceApiError(response);
-                throw new BinanceApiException(apiError);
-            }
-        } catch (IOException e) {
-            throw new BinanceApiException(e);
-        }
-    }
-
-    /**
-     * Extracts and converts the response error body into an object.
-     */
-    public static BinanceApiError getBinanceApiError(Response<?> response) throws IOException, BinanceApiException {
-        return errorBodyConverter.convert(response.errorBody());
-    }
+  public static AsyncHttpClient getSharedClient() {
+    return sharedClient;
+  }
 
 }

@@ -8,18 +8,21 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.asynchttpclient.HttpResponseStatus;
+import org.asynchttpclient.filter.FilterContext;
+import org.asynchttpclient.filter.FilterContext.FilterContextBuilder;
+
 import com.binance.api.client.domain.general.ExchangeInfo;
 import com.binance.api.client.domain.general.RateLimit;
 import com.binance.api.client.domain.general.RateLimitType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.netty.handler.codec.http.HttpHeaders;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
 
 @Slf4j
-public class RequestRateLimitingInterceptor implements Interceptor {
+public class RequestRateLimitingInterceptor {
 
   private final int limit;
 
@@ -44,33 +47,31 @@ public class RequestRateLimitingInterceptor implements Interceptor {
 
   AtomicInteger weightUsed = new AtomicInteger();
 
-  @Override
-  public Response intercept(Chain chain) throws IOException {
+  @SneakyThrows
+  public <T> FilterContext<T> request(FilterContext<T> ctx) {
     if (weightUsed.get() >= limit) {
-      try {
-        log.warn("approaching request weight limit, slowing down a bit");
-        sleep(1000);
-      } catch (InterruptedException e) {
-        throw new IOException(e);
-      }
+      log.warn("approaching request weight limit, slowing down a bit");
+      sleep(1000);
     }
-    Request request = chain.request();
-    Response response = chain.proceed(request);
-    if (response.code() == 418 || response.code() == 429) {
-      try {
-        response.close();
-        log.warn("reached request weight limit, retrying after {}", response.header("retry-after"));
-        sleep(parseInt(response.header("retry-after")) * 1000);
-        response = chain.proceed(request);
-      } catch (Exception e) {
-        throw new IOException(e);
-      }
+    return ctx;
+  }
+
+  @SneakyThrows
+  public <T> FilterContext<T> response(FilterContext<T> ctx) {
+    HttpResponseStatus status = ctx.getResponseStatus();
+    HttpHeaders headers = ctx.getResponseHeaders();
+    if (status.getStatusCode() == 418 || status.getStatusCode() == 429) {
+      log.warn("reached request weight limit, retrying after {}", headers.get("retry-after"));
+      sleep(parseInt(headers.get("retry-after")) * 1000);
+      return new FilterContextBuilder<T>().request(ctx.getRequest()).replayRequest(true).build();
     }
-    String header = response.header("x-mbx-used-weight");
+    String header = headers.get("x-mbx-used-weight");
     if (header != null) {
+      log.info(header);
       weightUsed.set(parseInt(header));
     }
-    return response;
+
+    return ctx;
   }
 
 }
