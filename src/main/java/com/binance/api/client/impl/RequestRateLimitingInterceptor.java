@@ -67,7 +67,6 @@ public class RequestRateLimitingInterceptor {
     }
     String header = headers.get("x-mbx-used-weight");
     if (header != null) {
-      log.info(header);
       weightUsed.set(parseInt(header));
     }
 
