@@ -14,6 +14,7 @@ import com.binance.api.client.exception.BinanceApiException;
 import com.binance.api.client.security.AuthenticationInterceptor;
 
 import io.netty.channel.ChannelOption;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Converter;
@@ -33,6 +34,10 @@ public class BinanceApiServiceGenerator {
   static {
     RequestRateLimitingInterceptor rateLimiter = new RequestRateLimitingInterceptor();
     sharedClient = Dsl.asyncHttpClient(new Builder().setKeepAlive(true)
+
+        .setUseNativeTransport(true)
+
+        .setEventLoopGroup(new EpollEventLoopGroup(Runtime.getRuntime().availableProcessors()))
 
         .addChannelOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, Integer.getInteger("binance.api.connectio.timeout.millis", 20000))
 
