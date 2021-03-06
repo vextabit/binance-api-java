@@ -1,8 +1,9 @@
 package com.binance.api.client.domain.account.request;
 
 import com.binance.api.client.constant.BinanceApiConstants;
+import com.binance.api.client.domain.Retriable;
 
-public class OcoOrderStatusRequest {
+public class OcoOrderStatusRequest implements Retriable<OcoOrderStatusRequest> {
 
   Long orderListId;
 
@@ -10,7 +11,7 @@ public class OcoOrderStatusRequest {
 
   Long recvWindow;
 
-  Long timestamp;
+  long timestamp;
 
   public OcoOrderStatusRequest(String origClientOrderId) {
     this();
@@ -51,12 +52,15 @@ public class OcoOrderStatusRequest {
     this.recvWindow = recvWindow;
   }
 
-  public Long getTimestamp() {
+  @Override
+  public long getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(Long timestamp) {
+  @Override
+  public OcoOrderStatusRequest timestamp(long timestamp) {
     this.timestamp = timestamp;
+    return this;
   }
 
   @Override

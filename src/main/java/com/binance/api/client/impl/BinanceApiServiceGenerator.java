@@ -53,7 +53,7 @@ public class BinanceApiServiceGenerator {
 
         .setEventLoopGroup(eventLoopGroup)
 
-        .addChannelOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, Integer.getInteger("binance.api.connection.timeout.millis", 20000))
+        .addChannelOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, Integer.getInteger("binance.api.connection.timeout.millis", 40000))
 
         .setMaxConnectionsPerHost(Integer.getInteger("binance.api.max.connections.per.host", 500))
 
