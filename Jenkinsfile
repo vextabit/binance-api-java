@@ -2,7 +2,7 @@ pipeline {
     agent any
 	tools {
 	    maven 'mvn3'  
-	    jdk 'jdk14'  
+	    jdk 'jdk15'  
 	}
 	
 	options {
@@ -10,12 +10,6 @@ pipeline {
 	    disableConcurrentBuilds()
 	}
 	
-    parameters {
-        booleanParam(
-            name: "RELEASE",
-            description: "Build a release from current commit.",
-            defaultValue: false)
-    }
     stages {
         stage('Build & Deploy SNAPSHOT') {
            steps {
@@ -30,7 +24,10 @@ pipeline {
 
         stage('Release') {
             when {
-                branch 'master'
+                anyOf {               
+                    branch 'master';
+                    branch 'netty-client'
+                }
             }
             steps {
                 script {
