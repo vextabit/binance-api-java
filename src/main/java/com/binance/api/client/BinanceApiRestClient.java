@@ -20,6 +20,7 @@ import com.binance.api.client.domain.account.request.CancelOrderResponse;
 import com.binance.api.client.domain.account.request.OcoOrderStatusRequest;
 import com.binance.api.client.domain.account.request.OrderRequest;
 import com.binance.api.client.domain.account.request.OrderStatusRequest;
+import com.binance.api.client.domain.account.request.SubAccountTransfer;
 import com.binance.api.client.domain.general.Asset;
 import com.binance.api.client.domain.general.ExchangeInfo;
 import com.binance.api.client.domain.market.AggTrade;
@@ -268,6 +269,8 @@ public interface BinanceApiRestClient {
    */
   List<Trade> getMyTrades(String symbol);
 
+  List<Trade> getMyTrades(String symbol, Long fromId);
+
   /**
    * Submit a withdraw request.
    *
@@ -294,6 +297,13 @@ public interface BinanceApiRestClient {
    * @return withdraw history, containing a list of withdrawals
    */
   WithdrawHistory getWithdrawHistory(String asset);
+
+  /**
+   * Fetch sub-account transfer history.
+   *
+   * @return sub-account transfers
+   */
+  List<SubAccountTransfer> getSubAccountTransfers();
 
   /**
    * Fetch deposit address.

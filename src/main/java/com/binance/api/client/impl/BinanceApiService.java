@@ -33,6 +33,7 @@ import com.binance.api.client.domain.account.TradeHistoryItem;
 import com.binance.api.client.domain.account.WithdrawHistory;
 import com.binance.api.client.domain.account.WithdrawResult;
 import com.binance.api.client.domain.account.request.CancelOrderResponse;
+import com.binance.api.client.domain.account.request.SubAccountTransfer;
 import com.binance.api.client.domain.event.ListenKey;
 import com.binance.api.client.domain.general.Asset;
 import com.binance.api.client.domain.general.ExchangeInfo;
@@ -226,6 +227,10 @@ public interface BinanceApiService {
   @Headers(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
   @GET("/wapi/v3/depositAddress.html")
   Call<DepositAddress> getDepositAddress(@Query("asset") String asset, @Query("recvWindow") Long recvWindow, @Query("timestamp") Long timestamp);
+
+  @Headers(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
+  @GET("/sapi/v1/sub-account/transfer/subUserHistory")
+  Call<List<SubAccountTransfer>> getSubAccountTransfers(@Query("timestamp") Long timestamp);
 
   // User stream endpoints
 
