@@ -2,16 +2,16 @@ package com.binance.api.client.domain.general;
 
 import java.util.List;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.binance.api.client.constant.BinanceApiConstants;
 import com.binance.api.client.domain.OrderType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Data;
 
 /**
  * Symbol information (base/quote).
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 public class SymbolInfo {
 
   private String symbol;
@@ -32,83 +32,13 @@ public class SymbolInfo {
 
   private boolean ocoAllowed;
 
+  private boolean quoteOrderQtyMarketAllowed;
+
   private boolean isSpotTradingAllowed;
 
   private boolean isMarginTradingAllowed;
 
   private List<SymbolFilter> filters;
-
-  public String getSymbol() {
-    return symbol;
-  }
-
-  public void setSymbol(String symbol) {
-    this.symbol = symbol;
-  }
-
-  public SymbolStatus getStatus() {
-    return status;
-  }
-
-  public void setStatus(SymbolStatus status) {
-    this.status = status;
-  }
-
-  public String getBaseAsset() {
-    return baseAsset;
-  }
-
-  public void setBaseAsset(String baseAsset) {
-    this.baseAsset = baseAsset;
-  }
-
-  public Integer getBaseAssetPrecision() {
-    return baseAssetPrecision;
-  }
-
-  public void setBaseAssetPrecision(Integer baseAssetPrecision) {
-    this.baseAssetPrecision = baseAssetPrecision;
-  }
-
-  public String getQuoteAsset() {
-    return quoteAsset;
-  }
-
-  public void setQuoteAsset(String quoteAsset) {
-    this.quoteAsset = quoteAsset;
-  }
-
-  public Integer getQuotePrecision() {
-    return quotePrecision;
-  }
-
-  public void setQuotePrecision(Integer quotePrecision) {
-    this.quotePrecision = quotePrecision;
-  }
-
-  public List<OrderType> getOrderTypes() {
-    return orderTypes;
-  }
-
-  public void setOrderTypes(List<OrderType> orderTypes) {
-    this.orderTypes = orderTypes;
-  }
-
-  public boolean isIcebergAllowed() {
-    return icebergAllowed;
-  }
-
-  public void setIcebergAllowed(boolean icebergAllowed) {
-    this.icebergAllowed = icebergAllowed;
-  }
-
-  public List<SymbolFilter> getFilters() {
-    return filters;
-  }
-
-  public void setFilters(List<SymbolFilter> filters) {
-    this.filters = filters;
-  }
 
   /**
    * @param filterType filter type to filter for.
@@ -128,45 +58,5 @@ public class SymbolInfo {
         .findFirst()
         .get();
   }
-
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-        .append("symbol", symbol)
-        .append("status", status)
-        .append("baseAsset", baseAsset)
-        .append("baseAssetPrecision", baseAssetPrecision)
-        .append("quoteAsset", quoteAsset)
-        .append("quotePrecision", quotePrecision)
-        .append("orderTypes", orderTypes)
-        .append("icebergAllowed", icebergAllowed)
-        .append("filters", filters)
-        .toString();
-  }
-
-  public boolean isOcoAllowed() {
-    return ocoAllowed;
-  }
-
-  public void setOcoAllowed(boolean ocoAllowed) {
-    this.ocoAllowed = ocoAllowed;
-  }
-
-  public boolean isSpotTradingAllowed() {
-    return isSpotTradingAllowed;
-  }
-
-  public void setSpotTradingAllowed(boolean isSpotTradingAllowed) {
-    this.isSpotTradingAllowed = isSpotTradingAllowed;
-  }
-
-  public boolean isMarginTradingAllowed() {
-    return isMarginTradingAllowed;
-  }
-
-  public void setMarginTradingAllowed(boolean isMarginTradingAllowed) {
-    this.isMarginTradingAllowed = isMarginTradingAllowed;
-  }
-
 
 }
