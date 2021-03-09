@@ -29,6 +29,7 @@ import com.binance.api.client.domain.account.request.CancelOrderResponse;
 import com.binance.api.client.domain.account.request.OcoOrderStatusRequest;
 import com.binance.api.client.domain.account.request.OrderRequest;
 import com.binance.api.client.domain.account.request.OrderStatusRequest;
+import com.binance.api.client.domain.account.request.SubAccountTransfer;
 import com.binance.api.client.domain.general.Asset;
 import com.binance.api.client.domain.general.ExchangeInfo;
 import com.binance.api.client.domain.market.AggTrade;
@@ -242,6 +243,13 @@ public class BinanceApiRestClientImpl implements BinanceApiRestClient {
     return getMyTrades(symbol, null, null, BinanceApiConstants.DEFAULT_RECEIVING_WINDOW, System.currentTimeMillis());
   }
 
+
+  @Override
+  public List<Trade> getMyTrades(String symbol, Long fromId) {
+    return getMyTrades(symbol, null, fromId, BinanceApiConstants.DEFAULT_RECEIVING_WINDOW,
+        System.currentTimeMillis());
+  }
+
   @Override
   public WithdrawResult withdraw(String asset, String address, String amount, String name, String addressTag) {
     return executeSync(binanceApiService.withdraw(asset, address, amount, name, addressTag, BinanceApiConstants.DEFAULT_RECEIVING_WINDOW, System.currentTimeMillis()));
@@ -255,6 +263,11 @@ public class BinanceApiRestClientImpl implements BinanceApiRestClient {
   @Override
   public WithdrawHistory getWithdrawHistory(String asset) {
     return executeSync(binanceApiService.getWithdrawHistory(asset, BinanceApiConstants.DEFAULT_RECEIVING_WINDOW, System.currentTimeMillis()));
+  }
+
+  @Override
+  public List<SubAccountTransfer> getSubAccountTransfers() {
+    return executeSync(binanceApiService.getSubAccountTransfers(System.currentTimeMillis()));
   }
 
   @Override
