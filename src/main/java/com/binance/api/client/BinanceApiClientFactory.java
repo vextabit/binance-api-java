@@ -87,7 +87,7 @@ public class BinanceApiClientFactory {
    * Creates a new web socket client used for handling data streams.
    */
   public BinanceApiWebSocketClient newWebSocketClient() {
-    return new BinanceApiWebSocketClientImpl(BinanceApiServiceGenerator.getSharedClient());
+    return new BinanceApiWebSocketClientImpl(BinanceApiServiceGenerator.getSharedWsClient());
   }
 
   /**

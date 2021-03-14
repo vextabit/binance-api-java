@@ -37,6 +37,7 @@ public class BinanceApiServiceGenerator {
 
   private static final Converter.Factory converterFactory = JacksonConverterFactory.create();
   private static AsyncHttpClient sharedClient;
+  private static AsyncHttpClient sharedWsClient;
 
   static {
 
@@ -62,6 +63,8 @@ public class BinanceApiServiceGenerator {
         .setWebSocketMaxBufferSize(getInteger("binance.api.ws.buffer.size", 65536))
 
         .setWebSocketMaxFrameSize(getInteger("binance.api.ws.frame.size", 65536));
+
+    sharedWsClient = Dsl.asyncHttpClient(builder.build());
 
     if (System.getProperty("binance.api.rate.max-connections") != null
         && System.getProperty("binance.api.rate.requests-per-second") != null) {
@@ -123,8 +126,8 @@ public class BinanceApiServiceGenerator {
     return errorBodyConverter.convert(response.errorBody());
   }
 
-  public static AsyncHttpClient getSharedClient() {
-    return sharedClient;
+  public static AsyncHttpClient getSharedWsClient() {
+    return sharedWsClient;
   }
 
 }
