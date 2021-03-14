@@ -1,11 +1,14 @@
 package com.binance.api.client.impl;
 
+import static java.lang.Integer.getInteger;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig.Builder;
 import org.asynchttpclient.Dsl;
+import org.asynchttpclient.extras.guava.RateLimitedThrottleRequestFilter;
 import org.asynchttpclient.extras.retrofit.AsyncHttpClientCallFactory;
 
 import com.binance.api.client.BinanceApiError;
@@ -36,7 +39,6 @@ public class BinanceApiServiceGenerator {
   private static AsyncHttpClient sharedClient;
 
   static {
-    RequestRateLimitingInterceptor rateLimiter = new RequestRateLimitingInterceptor();
 
     EventLoopGroup eventLoopGroup;
     try {
@@ -47,23 +49,30 @@ public class BinanceApiServiceGenerator {
       log.info("using nio netty http event loop");
     }
 
-    sharedClient = Dsl.asyncHttpClient(new Builder().setKeepAlive(true)
+    Builder builder = new Builder().setKeepAlive(true)
 
         .setUseNativeTransport(true)
 
         .setEventLoopGroup(eventLoopGroup)
 
-        .addChannelOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, Integer.getInteger("binance.api.connection.timeout.millis", 40000))
+        .addChannelOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, getInteger("binance.api.connection.timeout.millis", 40000))
 
-        .setMaxConnectionsPerHost(Integer.getInteger("binance.api.max.connections.per.host", 500))
+        .setMaxConnectionsPerHost(getInteger("binance.api.max.connections.per.host", 500))
 
-        .setWebSocketMaxBufferSize(Integer.getInteger("binance.api.ws.buffer.size", 65536))
+        .setWebSocketMaxBufferSize(getInteger("binance.api.ws.buffer.size", 65536))
 
-        .setWebSocketMaxFrameSize(Integer.getInteger("binance.api.ws.frame.size", 65536))
+        .setWebSocketMaxFrameSize(getInteger("binance.api.ws.frame.size", 65536));
 
-        .addRequestFilter(rateLimiter::request).addResponseFilter(rateLimiter::response)
+    if (System.getProperty("binance.api.rate.max-connections") != null
+        && System.getProperty("binance.api.rate.requests-per-second") != null) {
+      builder.addRequestFilter(new RateLimitedThrottleRequestFilter(getInteger("binance.api.rate.max-connections"),
+          getInteger("binance.api.rate.requests-per-second"), 60000));
+    } else {
+      RequestRateLimitingInterceptor rateLimiter = new RequestRateLimitingInterceptor();
+      builder.addRequestFilter(rateLimiter::request).addResponseFilter(rateLimiter::response);
+    }
 
-        .build());
+    sharedClient = Dsl.asyncHttpClient(builder.build());
   }
 
   @SuppressWarnings("unchecked")
