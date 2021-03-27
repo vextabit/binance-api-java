@@ -2,24 +2,15 @@ package com.binance.api.client.domain.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.Data;
+
 /**
  * Dummy type to wrap a listen key from a server response.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 public class ListenKey {
 
-  private String listenKey;
+  String listenKey;
 
-  public String getListenKey() {
-    return listenKey;
-  }
-
-  public void setListenKey(String listenKey) {
-    this.listenKey = listenKey;
-  }
-
-  @Override
-  public String toString() {
-    return listenKey;
-  }
 }
