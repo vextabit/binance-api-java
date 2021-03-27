@@ -1,6 +1,7 @@
 package com.binance.api.client.domain.account.request;
 
 import com.binance.api.client.constant.BinanceApiConstants;
+import com.binance.api.client.domain.Retriable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.ToString;
@@ -10,13 +11,13 @@ import lombok.ToString;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
-public class OrderRequest {
+public class OrderRequest implements Retriable<OrderRequest> {
 
   private final String symbol;
 
   private Long recvWindow;
 
-  private Long timestamp;
+  private long timestamp;
 
   public OrderRequest(String symbol) {
     this.symbol = symbol;
@@ -37,11 +38,13 @@ public class OrderRequest {
     return this;
   }
 
-  public Long getTimestamp() {
+  @Override
+  public long getTimestamp() {
     return timestamp;
   }
 
-  public OrderRequest timestamp(Long timestamp) {
+  @Override
+  public OrderRequest timestamp(long timestamp) {
     this.timestamp = timestamp;
     return this;
   }

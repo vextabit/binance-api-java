@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.binance.api.client.constant.BinanceApiConstants;
 import com.binance.api.client.domain.OrderSide;
 import com.binance.api.client.domain.OrderType;
+import com.binance.api.client.domain.Retriable;
 import com.binance.api.client.domain.TimeInForce;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * A trade order to enter or exit a position.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class NewOrder {
+public class NewOrder implements Retriable<NewOrder> {
 
   /**
    * Symbol to place the order on.
@@ -251,10 +252,12 @@ public class NewOrder {
     return this;
   }
 
+  @Override
   public long getTimestamp() {
     return timestamp;
   }
 
+  @Override
   public NewOrder timestamp(long timestamp) {
     this.timestamp = timestamp;
     return this;

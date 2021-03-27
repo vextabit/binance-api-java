@@ -1,8 +1,13 @@
 package com.binance.api.client;
 
-import com.binance.api.client.impl.*;
-
-import static com.binance.api.client.impl.BinanceApiServiceGenerator.getSharedClient;
+import com.binance.api.client.impl.BinanceApiAsyncIsolatedMarginClientImpl;
+import com.binance.api.client.impl.BinanceApiAsyncMarginRestClientImpl;
+import com.binance.api.client.impl.BinanceApiAsyncRestClientImpl;
+import com.binance.api.client.impl.BinanceApiMarginRestClientImpl;
+import com.binance.api.client.impl.BinanceApiRestClientImpl;
+import com.binance.api.client.impl.BinanceApiServiceGenerator;
+import com.binance.api.client.impl.BinanceApiSwapRestClientImpl;
+import com.binance.api.client.impl.BinanceApiWebSocketClientImpl;
 
 /**
  * A factory for creating BinanceApi client objects.
@@ -83,7 +88,7 @@ public class BinanceApiClientFactory {
    * Creates a new web socket client used for handling data streams.
    */
   public BinanceApiWebSocketClient newWebSocketClient() {
-    return new BinanceApiWebSocketClientImpl(getSharedClient());
+    return new BinanceApiWebSocketClientImpl(BinanceApiServiceGenerator.getSharedWsClient());
   }
 
   /**
@@ -92,4 +97,14 @@ public class BinanceApiClientFactory {
   public BinanceApiSwapRestClient newSwapRestClient() {
     return new BinanceApiSwapRestClientImpl(apiKey, secret);
   }
+
+  /**
+   * Creates a new asynchronous isolated margin rest client.
+   *
+   * @return the client
+   */
+  public BinanceApiAsyncIsolatedMarginClient newAsyncIsolatedMarginRestClient() {
+    return new BinanceApiAsyncIsolatedMarginClientImpl(apiKey, secret);
+  }
+
 }

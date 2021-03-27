@@ -254,7 +254,8 @@ public class BinanceApiAsyncRestClientImpl implements BinanceApiAsyncRestClient 
 
   @Override
   public void convertDustToBnb(List<String> assets, BinanceApiCallback<DustTransferResponse> callback) {
-    binanceApiService.dustTransfer(assets, BinanceApiConstants.DEFAULT_RECEIVING_WINDOW, currentTimeMillis());
+    binanceApiService.dustTransfer(assets, BinanceApiConstants.DEFAULT_RECEIVING_WINDOW, currentTimeMillis())
+        .enqueue(new BinanceApiCallbackAdapter<>(callback));
   }
 
   // User stream endpoints

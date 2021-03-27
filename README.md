@@ -5,6 +5,8 @@ binance-java-api is a lightweight Java library for interacting with the [Binance
 ## Features
 * Support for synchronous and asynchronous REST requests to all [General](https://www.binance.com/restapipub.html#user-content-general-endpoints), [Market Data](https://www.binance.com/restapipub.html#user-content-market-data-endpoints), [Account](https://www.binance.com/restapipub.html#user-content-account-endpoints) endpoints, and [User](https://www.binance.com/restapipub.html#user-content-user-data-stream-endpoints) stream endpoints.
 * Support for User Data, Trade, Kline, and Depth event streaming using [Binance WebSocket API](https://www.binance.com/restapipub.html#wss-endpoint).
+* Implements a simple request rate limiter to prevent your application from getting an IP ban in case you send too many requests too fast. Automatically retries request if your IP was banned.
+* Uses Netty as HTTP client and will automatically switch to Epoll event loop if available on the classpath for your platform.
 
 ## Installation
 1. Install library into your Maven's local repository by running `mvn install`
@@ -547,6 +549,10 @@ OcoOrderResponse order = client.newOcoOrder(buy);
 ```
 
 *WATCH OUT*. newClientOrderId is your identifier of the two-leg trade. In order to distinguish between limit_maker and stop_loss part you need to set individual client ids for these legs at creation time (limitClientOrderId, stopClientOrderId). Beware however that when an oco stop happens the limit_maker leg order update will come without your client id, it will only contain binance generated numeric orderId (which you can re-query and get your clientOrderId anyway). This is the case with all cancel events - they will not have your own id, but binance orderId instead.
+
+### Isolated margin trading
+
+If you want to play short or just want to trade long with leverage you might want to create an isolated margin account for a selected pair / borrow some asset and sell it. Later you will re-buy it at a lower price and repay the debt. You can use `com.binance.api.client.BinanceApiClientFactory.newAsyncIsolatedMarginRestClient()` for this purpose. It contains all methods you may need to create isolated margin accounts and create isolated margin trades and borrow / repay debts. If you want to listen to order or account state changes use the `com.binance.api.client.BinanceApiAsyncIsolatedMarginClient.startUserDataStream(String, BinanceApiCallback<ListenKey>)` to start a data stream for a specific isolated margin account. Then use the obtained key with user data websocket (`com.binance.api.client.BinanceApiWebSocketClient.onUserDataUpdateEvent(String, BinanceApiCallback<UserDataUpdateEvent>)`) to subscribe to notifications.
 
 ### More examples
 An extensive set of examples, covering most aspects of the API, can be found at https://github.com/joaopsilva/binance-java-api/tree/master/src/test/java/com/binance/api/examples.
