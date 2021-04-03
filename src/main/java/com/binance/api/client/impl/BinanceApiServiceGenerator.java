@@ -60,9 +60,9 @@ public class BinanceApiServiceGenerator {
 
         .setMaxConnectionsPerHost(getInteger("binance.api.max.connections.per.host", 500))
 
-        .setWebSocketMaxBufferSize(getInteger("binance.api.ws.buffer.size", 65536))
+        .setWebSocketMaxBufferSize(getInteger("binance.api.ws.buffer.size", 1<<19))
 
-        .setWebSocketMaxFrameSize(getInteger("binance.api.ws.frame.size", 65536));
+        .setWebSocketMaxFrameSize(getInteger("binance.api.ws.frame.size", 1<<19));
 
     sharedWsClient = Dsl.asyncHttpClient(builder.build());
 
