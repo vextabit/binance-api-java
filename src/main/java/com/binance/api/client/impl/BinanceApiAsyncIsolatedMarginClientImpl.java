@@ -1,7 +1,6 @@
 package com.binance.api.client.impl;
 
 import static com.binance.api.client.constant.BinanceApiConstants.DEFAULT_RECEIVING_WINDOW;
-import static com.binance.api.client.impl.BinanceApiServiceGenerator.createService;
 import static java.lang.System.currentTimeMillis;
 import static java.util.stream.Collectors.joining;
 
@@ -33,7 +32,7 @@ public class BinanceApiAsyncIsolatedMarginClientImpl implements BinanceApiAsyncI
   private BinanceApiService binanceApiService;
 
   public BinanceApiAsyncIsolatedMarginClientImpl(String apiKey, String secret) {
-    binanceApiService = createService(BinanceApiService.class, apiKey, secret);
+    binanceApiService = ApiServiceGenerator.createService(BinanceApiService.class, apiKey, secret);
   }
 
   @Override

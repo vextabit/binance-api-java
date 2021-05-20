@@ -24,10 +24,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RequestRateLimitingInterceptor {
+public class NettyRequestRateLimitingInterceptor {
 
   private final int limit;
-  public RequestRateLimitingInterceptor() {
+  public NettyRequestRateLimitingInterceptor() {
     this(getLimitsDefault());
   }
 
@@ -41,7 +41,7 @@ public class RequestRateLimitingInterceptor {
     }
   }
 
-  public RequestRateLimitingInterceptor(RateLimit requestWeightLimit) {
+  public NettyRequestRateLimitingInterceptor(RateLimit requestWeightLimit) {
     this.limit = (int) (requestWeightLimit.getLimit() * 0.9);
   }
 

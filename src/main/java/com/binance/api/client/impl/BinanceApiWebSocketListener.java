@@ -2,17 +2,20 @@ package com.binance.api.client.impl;
 
 import java.io.IOException;
 
-import org.asynchttpclient.ws.WebSocket;
-
 import com.binance.api.client.BinanceApiCallback;
+import com.binance.api.client.exception.BinanceApiException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+
 /**
  * Binance API WebSocket listener.
  */
-public class BinanceApiWebSocketListener<T> implements org.asynchttpclient.ws.WebSocketListener {
+public class BinanceApiWebSocketListener<T> extends WebSocketListener {
 
   private BinanceApiCallback<T> callback;
 
@@ -20,7 +23,7 @@ public class BinanceApiWebSocketListener<T> implements org.asynchttpclient.ws.We
 
   private final ObjectReader objectReader;
 
-  private WebSocket websocket;
+  private boolean closing = false;
 
   public BinanceApiWebSocketListener(BinanceApiCallback<T> callback, Class<T> eventClass) {
     this.callback = callback;
@@ -33,31 +36,24 @@ public class BinanceApiWebSocketListener<T> implements org.asynchttpclient.ws.We
   }
 
   @Override
-  public void onClose(WebSocket websocket, int code, String reason) {
-  }
-
-  @Override
-  public void onError(Throwable t) {
-    this.callback.onFailure(t);
-  }
-
-  @Override
-  public void onOpen(WebSocket websocket) {
-    this.websocket = websocket;
-  }
-
-  @Override
-  public void onPingFrame(byte[] payload) {
-    this.websocket.sendPongFrame(payload);
-  }
-
-  @Override
-  public void onTextFrame(String payload, boolean finalFragment, int rsv) {
+  public void onMessage(WebSocket webSocket, String text) {
     try {
-      callback.onResponse(objectReader.readValue(payload));
+      T event = objectReader.readValue(text);
+      callback.onResponse(event);
     } catch (IOException e) {
-      callback.onFailure(e);
+      throw new BinanceApiException(e);
     }
   }
 
+  @Override
+  public void onClosing(final WebSocket webSocket, final int code, final String reason) {
+    closing = true;
+  }
+
+  @Override
+  public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+    if (!closing) {
+      callback.onFailure(t);
+    }
+  }
 }

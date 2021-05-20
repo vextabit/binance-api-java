@@ -1,6 +1,5 @@
 package com.binance.api.client.impl;
 
-import static com.binance.api.client.impl.BinanceApiServiceGenerator.createService;
 import static java.lang.System.currentTimeMillis;
 
 import java.util.List;
@@ -47,7 +46,7 @@ public class BinanceApiAsyncRestClientImpl implements BinanceApiAsyncRestClient 
   private final BinanceApiService binanceApiService;
 
   public BinanceApiAsyncRestClientImpl(String apiKey, String secret) {
-    binanceApiService = createService(BinanceApiService.class, apiKey, secret);
+    binanceApiService = ApiServiceGenerator.createService(BinanceApiService.class, apiKey, secret);
   }
 
   // General endpoints

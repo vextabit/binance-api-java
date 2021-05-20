@@ -1,7 +1,7 @@
 package com.binance.api.client.impl;
 
-import static com.binance.api.client.impl.BinanceApiServiceGenerator.createService;
-import static com.binance.api.client.impl.BinanceApiServiceGenerator.executeSync;
+import static com.binance.api.client.impl.ApiServiceGenerator.executeSync;
+import static java.lang.System.currentTimeMillis;
 
 import java.util.List;
 
@@ -30,12 +30,12 @@ public class BinanceApiMarginRestClientImpl implements BinanceApiMarginRestClien
     private final BinanceApiService binanceApiService;
 
     public BinanceApiMarginRestClientImpl(String apiKey, String secret) {
-        binanceApiService = createService(BinanceApiService.class, apiKey, secret);
+        binanceApiService = ApiServiceGenerator.createService(BinanceApiService.class, apiKey, secret);
     }
 
     @Override
     public MarginAccount getAccount() {
-        long timestamp = System.currentTimeMillis();
+        long timestamp = currentTimeMillis();
         return executeSync(binanceApiService.getMarginAccount(BinanceApiConstants.DEFAULT_RECEIVING_WINDOW, timestamp));
     }
 

@@ -1,15 +1,14 @@
 package com.binance.api.client.impl;
 
+import java.io.IOException;
+
 import com.binance.api.client.BinanceApiCallback;
 import com.binance.api.client.BinanceApiError;
 import com.binance.api.client.exception.BinanceApiException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import java.io.IOException;
-
-import static com.binance.api.client.impl.BinanceApiServiceGenerator.getBinanceApiError;
 
 /**
  * An adapter/wrapper which transforms a Callback from Retrofit into a BinanceApiCallback which is exposed to the client.
@@ -22,6 +21,7 @@ public class BinanceApiCallbackAdapter<T> implements Callback<T> {
     this.callback = callback;
   }
 
+  @Override
   public void onResponse(Call<T> call, Response<T> response) {
     if (response.isSuccessful()) {
       callback.onResponse(response.body());
@@ -32,7 +32,7 @@ public class BinanceApiCallbackAdapter<T> implements Callback<T> {
         return;
       }
       try {
-        BinanceApiError apiError = getBinanceApiError(response);
+        BinanceApiError apiError = ApiServiceGenerator.getBinanceApiError(response);
         onFailure(call, new BinanceApiException(apiError));
       } catch (IOException e) {
         onFailure(call, new BinanceApiException(e));
