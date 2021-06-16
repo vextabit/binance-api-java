@@ -4,7 +4,7 @@
 
   <groupId>com.binance.api</groupId>
   <artifactId>binance-api-client</artifactId>
-  <version>3.2.2-SNAPSHOT</version>
+  <version>3.2.2</version>
   <licenses>
     <license>
       <name>The MIT License</name>
@@ -108,7 +108,7 @@
 
   <scm>
     <developerConnection>scm:git:http://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@kube1:3000/anydoby/binance-java-api.git</developerConnection>
-    <tag>binance-api-client-3.1.1</tag>
+    <tag>binance-api-client-3.2.2</tag>
   </scm>
 
   <distributionManagement>
