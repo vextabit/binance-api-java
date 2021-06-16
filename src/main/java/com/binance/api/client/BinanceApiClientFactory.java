@@ -4,6 +4,7 @@ import com.binance.api.client.impl.ApiServiceGenerator;
 import com.binance.api.client.impl.BinanceApiAsyncIsolatedMarginClientImpl;
 import com.binance.api.client.impl.BinanceApiAsyncMarginRestClientImpl;
 import com.binance.api.client.impl.BinanceApiAsyncRestClientImpl;
+import com.binance.api.client.impl.BinanceApiIsolatedMarginClientImpl;
 import com.binance.api.client.impl.BinanceApiMarginRestClientImpl;
 import com.binance.api.client.impl.BinanceApiRestClientImpl;
 import com.binance.api.client.impl.BinanceApiSwapRestClientImpl;
@@ -104,6 +105,15 @@ public class BinanceApiClientFactory {
    */
   public BinanceApiAsyncIsolatedMarginClient newAsyncIsolatedMarginRestClient() {
     return new BinanceApiAsyncIsolatedMarginClientImpl(apiKey, secret);
+  }
+
+  /**
+   * Creates a new isolated margin rest client.
+   *
+   * @return the client
+   */
+  public BinanceApiIsolatedMarginClient newIsolatedMarginRestClient() {
+    return new BinanceApiIsolatedMarginClientImpl(apiKey, secret);
   }
 
 }
