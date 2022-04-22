@@ -19,5 +19,6 @@ public enum FilterType {
   MARKET_LOT_SIZE,
   MAX_NUM_ICEBERG_ORDERS,
   MAX_POSITION,
+  TRAILING_DELTA
 
 }

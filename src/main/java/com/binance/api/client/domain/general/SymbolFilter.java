@@ -40,6 +40,7 @@ import lombok.Data;
     @Type(value = MaxNumAlgoOrdersFilter.class, name = "MAX_NUM_ALGO_ORDERS"),
     @Type(value = MaxNumIcebergOrders.class, name = "MAX_NUM_ICEBERG_ORDERS"),
     @Type(value = MaxPositionFilter.class, name = "MAX_POSITION"),
+    @Type(value = TrailingDeltaFilter.class, name = "TRAILING_DELTA"),
 })
 @Data
 public abstract class SymbolFilter {
