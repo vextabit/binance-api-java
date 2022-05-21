@@ -31,7 +31,7 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
 
     private final String hostname = "159.65.4.199";
     private final int port = 3128;
-    private final Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(hostname, port));
+    private final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostname, port));
 
     {
         Dispatcher dispatcher = new Dispatcher();
