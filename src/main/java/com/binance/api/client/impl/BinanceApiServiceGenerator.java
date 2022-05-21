@@ -1,5 +1,7 @@
 package com.binance.api.client.impl;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,11 +25,19 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
   private final OkHttpClient sharedClient;
   private final Converter.Factory converterFactory = JacksonConverterFactory.create();
 
+  private final String hostname = "159.65.4.199";
+  private final int port = 3128;
+  private final Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(hostname, port));
+
   {
     Dispatcher dispatcher = new Dispatcher();
     dispatcher.setMaxRequestsPerHost(500);
     dispatcher.setMaxRequests(500);
-    sharedClient = new OkHttpClient.Builder().dispatcher(dispatcher).pingInterval(20, TimeUnit.SECONDS).build();
+    sharedClient = new OkHttpClient.Builder()
+            .dispatcher(dispatcher)
+            .proxy(proxy)
+            .pingInterval(20, TimeUnit.SECONDS)
+            .build();
   }
 
   @Override
