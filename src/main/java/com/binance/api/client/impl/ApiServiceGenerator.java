@@ -14,7 +14,7 @@ import retrofit2.Response;
 
 public class ApiServiceGenerator {
 
-  private static ApiGenerator generator;
+  private static final ApiGenerator generator;
 
   static {
     try {
@@ -60,6 +60,8 @@ public class ApiServiceGenerator {
    * Extracts and converts the response error body into an object.
    */
   public static BinanceApiError getBinanceApiError(Response<?> response) throws IOException, BinanceApiException {
+    assert errorBodyConverter != null;
+    assert response.errorBody() != null;
     return errorBodyConverter.convert(response.errorBody());
   }
 

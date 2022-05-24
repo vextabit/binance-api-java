@@ -1,12 +1,13 @@
 package com.binance.api.client.impl;
 
 import java.io.IOException;
+import java.net.*;
 import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.sun.net.httpserver.HttpsConfigurator;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,12 +34,28 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
     private final int port = 3128;
     private final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostname, port));
 
+    private final ProxySelector proxySelector = new ProxySelector() {
+
+        @Override
+        public List<Proxy> select(URI uri) {
+            List<Proxy> list = new ArrayList<>();
+            list.add(proxy);
+            return list;
+        }
+
+        @Override
+        public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+
+        }
+    };
+
     {
         Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequestsPerHost(500);
         dispatcher.setMaxRequests(500);
         sharedClient = new OkHttpClient.Builder()
                 .dispatcher(dispatcher)
+                .proxySelector(proxySelector)
                 .proxy(proxy)
                 .proxyAuthenticator((route, response) -> {
                     String credential = Credentials.basic("vextabit", "vgm2022");
