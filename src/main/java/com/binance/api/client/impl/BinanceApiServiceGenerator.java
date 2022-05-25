@@ -10,11 +10,6 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
 
@@ -27,40 +22,14 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
     private final OkHttpClient sharedClient;
     private final Converter.Factory converterFactory = JacksonConverterFactory.create();
 
-    TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-        }
-
-        @Override
-        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-        }
-
-        @Override
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-            return new java.security.cert.X509Certificate[]{};
-        }
-    };
-
-
     {
-        try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[]{TRUST_ALL_CERTS}, new java.security.SecureRandom());
-
-            Dispatcher dispatcher = new Dispatcher();
-            dispatcher.setMaxRequestsPerHost(500);
-            dispatcher.setMaxRequests(500);
-            sharedClient = new OkHttpClient.Builder()
-                    .dispatcher(dispatcher)
-                    .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) TRUST_ALL_CERTS)
-                    .hostnameVerifier((hostname, session) -> true)
-                    .pingInterval(20, TimeUnit.SECONDS)
-                    .build();
-
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
-        }
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequestsPerHost(500);
+        dispatcher.setMaxRequests(500);
+        sharedClient = new OkHttpClient.Builder()
+                .dispatcher(dispatcher)
+                .pingInterval(20, TimeUnit.SECONDS)
+                .build();
     }
 
     @Override
@@ -71,20 +40,12 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
         if (StringUtils.isEmpty(apiKey) || StringUtils.isEmpty(secret)) {
             retrofitBuilder.client(sharedClient);
         } else {
-            try {
-                AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiKey, secret);
-                SSLContext sslContext = SSLContext.getInstance("SSL");
-                sslContext.init(null, new TrustManager[]{TRUST_ALL_CERTS}, new java.security.SecureRandom());
-
-                OkHttpClient adaptedClient = sharedClient.newBuilder()
-                        .addInterceptor(interceptor)
-                        .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) TRUST_ALL_CERTS)
-                        .hostnameVerifier((hostname, session) -> true)
-                        .build();
-                retrofitBuilder.client(adaptedClient);
-            } catch (NoSuchAlgorithmException | KeyManagementException e) {
-                throw new RuntimeException(e);
-            }
+            AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiKey, secret);
+            OkHttpClient adaptedClient = sharedClient.newBuilder()
+                    .addInterceptor(interceptor)
+                    .hostnameVerifier((hostname, session) -> true)
+                    .build();
+            retrofitBuilder.client(adaptedClient);
         }
 
         Retrofit retrofit = retrofitBuilder.build();
