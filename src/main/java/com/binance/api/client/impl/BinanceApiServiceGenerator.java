@@ -55,6 +55,8 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
         dispatcher.setMaxRequests(500);
         sharedClient = new OkHttpClient.Builder()
                 .dispatcher(dispatcher)
+                .followRedirects(false)
+                .followSslRedirects(false)
                 .proxySelector(proxySelector)
                 .proxy(proxy)
                 .proxyAuthenticator((route, response) -> {
@@ -78,7 +80,18 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
             // `adaptedClient` will use its own interceptor, but share thread pool etc with
             // the 'parent' client
             AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiKey, secret);
-            OkHttpClient adaptedClient = sharedClient.newBuilder().addInterceptor(interceptor).build();
+            OkHttpClient adaptedClient = sharedClient.newBuilder()
+                    .addInterceptor(interceptor)
+                    .followRedirects(false)
+                    .followSslRedirects(false)
+                    .proxySelector(proxySelector)
+                    .proxy(proxy)
+                    .proxyAuthenticator((route, response) -> {
+                        String credential = Credentials.basic("vextabit", "vgm2022");
+                        return response.request().newBuilder()
+                                .header("Proxy-Authorization", credential)
+                                .build();
+                    }).build();
             retrofitBuilder.client(adaptedClient);
         }
 
