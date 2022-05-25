@@ -32,36 +32,17 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
     private final OkHttpClient sharedClient;
     private final Converter.Factory converterFactory = JacksonConverterFactory.create();
 
-    private final String hostname = "159.65.4.199";
-    private final int port = 3128;
-    private final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostname, port));
-
-    private final CertificatePinner certificatePinner = new CertificatePinner.Builder()
-            .add("*.binance.com", "sha256/f7ipmaGK2IVZy864hvXgKTJKw4SKC2tE29F0f0/Vj+s=")
-            .build();
-
-    TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-        }
-
-        @Override
-        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-        }
-
-        @Override
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-            return new java.security.cert.X509Certificate[]{};
-        }
-    };
-
     private final ProxySelector proxySelector = new ProxySelector() {
+        private final List<Proxy> noProxy = new ArrayList<>();
+        private final List<Proxy> proxies = new ArrayList<>();
 
         @Override
         public List<Proxy> select(URI uri) {
-            List<Proxy> list = new ArrayList<Proxy>();
-            list.add(proxy);
-            return list;
+            noProxy.add(Proxy.NO_PROXY);
+            InetSocketAddress inetSocketAddress = new InetSocketAddress("159.65.4.199", 3128);
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, inetSocketAddress);
+            proxies.add(proxy);
+            return proxies;
         }
 
         @Override
@@ -71,23 +52,15 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
     };
 
     {
-        try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[]{TRUST_ALL_CERTS}, new java.security.SecureRandom());
+        ProxySelector.setDefault(proxySelector);
 
-            Dispatcher dispatcher = new Dispatcher();
-            dispatcher.setMaxRequestsPerHost(500);
-            dispatcher.setMaxRequests(500);
-            sharedClient = new OkHttpClient.Builder()
-                    .dispatcher(dispatcher)
-                    .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) TRUST_ALL_CERTS)
-                    .hostnameVerifier((hostname, session) -> true)
-                    .pingInterval(20, TimeUnit.SECONDS)
-                    .build();
-
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
-        }
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequestsPerHost(500);
+        dispatcher.setMaxRequests(500);
+        sharedClient = new OkHttpClient.Builder()
+                .dispatcher(dispatcher)
+                .pingInterval(20, TimeUnit.SECONDS)
+                .build();
     }
 
     @Override
@@ -98,20 +71,9 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
         if (StringUtils.isEmpty(apiKey) || StringUtils.isEmpty(secret)) {
             retrofitBuilder.client(sharedClient);
         } else {
-            try {
-                AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiKey, secret);
-                SSLContext sslContext = SSLContext.getInstance("SSL");
-                sslContext.init(null, new TrustManager[]{TRUST_ALL_CERTS}, new java.security.SecureRandom());
-
-                OkHttpClient adaptedClient = sharedClient.newBuilder()
-                        .addInterceptor(interceptor)
-                        .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) TRUST_ALL_CERTS)
-                        .hostnameVerifier((hostname, session) -> true)
-                        .build();
-                retrofitBuilder.client(adaptedClient);
-            } catch (NoSuchAlgorithmException | KeyManagementException e) {
-                throw new RuntimeException(e);
-            }
+            AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiKey, secret);
+            OkHttpClient adaptedClient = sharedClient.newBuilder().addInterceptor(interceptor).build();
+            retrofitBuilder.client(adaptedClient);
         }
 
         Retrofit retrofit = retrofitBuilder.build();
