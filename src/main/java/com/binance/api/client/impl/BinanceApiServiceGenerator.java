@@ -43,7 +43,6 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
             AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiKey, secret);
             OkHttpClient adaptedClient = sharedClient.newBuilder()
                     .addInterceptor(interceptor)
-                    .hostnameVerifier((hostname, session) -> true)
                     .build();
             retrofitBuilder.client(adaptedClient);
         }
