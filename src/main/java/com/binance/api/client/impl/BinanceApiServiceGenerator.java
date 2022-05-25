@@ -2,14 +2,12 @@ package com.binance.api.client.impl;
 
 import java.io.IOException;
 import java.net.*;
-import java.net.Authenticator;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.*;
+import okhttp3.Authenticator;
 import org.apache.commons.lang3.StringUtils;
 
 import com.binance.api.client.BinanceApiWebSocketClient;
@@ -20,7 +18,7 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-import javax.net.ssl.*;
+import javax.annotation.Nullable;
 
 
 /**
@@ -31,6 +29,17 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
 
     private final OkHttpClient sharedClient;
     private final Converter.Factory converterFactory = JacksonConverterFactory.create();
+
+    private final Authenticator authenticator = new Authenticator() {
+        @Nullable
+        @Override
+        public Request authenticate(Route route, Response response) throws IOException {
+            String credential = Credentials.basic("vextabit", "vgm2022");
+            return response.request().newBuilder()
+                    .header("Proxy-Authorization", credential)
+                    .build();
+        }
+    };
 
     private final ProxySelector proxySelector = new ProxySelector() {
         private final List<Proxy> noProxy = new ArrayList<>();
@@ -59,6 +68,8 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
         dispatcher.setMaxRequests(500);
         sharedClient = new OkHttpClient.Builder()
                 .dispatcher(dispatcher)
+                .proxySelector(proxySelector)
+                .proxyAuthenticator(authenticator)
                 .pingInterval(20, TimeUnit.SECONDS)
                 .build();
     }
@@ -67,12 +78,16 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
     public <S> S createService(Class<S> serviceClass, String apiKey, String secret) {
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder().baseUrl(BinanceApiConfig.getApiBaseUrl())
                 .addConverterFactory(converterFactory);
+        ProxySelector.setDefault(proxySelector);
 
         if (StringUtils.isEmpty(apiKey) || StringUtils.isEmpty(secret)) {
             retrofitBuilder.client(sharedClient);
         } else {
             AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiKey, secret);
-            OkHttpClient adaptedClient = sharedClient.newBuilder().addInterceptor(interceptor).build();
+            OkHttpClient adaptedClient = sharedClient.newBuilder().addInterceptor(interceptor)
+                    .proxySelector(proxySelector)
+                    .proxyAuthenticator(authenticator)
+                    .build();
             retrofitBuilder.client(adaptedClient);
         }
 
