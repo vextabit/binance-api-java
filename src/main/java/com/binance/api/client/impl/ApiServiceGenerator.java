@@ -18,14 +18,11 @@ public class ApiServiceGenerator {
 
   static {
     try {
-      generator = (ApiGenerator) Class.forName("com.binance.api.client.impl.BinanceApiServiceGenerator").newInstance();
-      /*
       if (Boolean.getBoolean("binance.api.use.netty")) {
         generator = (ApiGenerator) Class.forName("com.binance.api.client.impl.NettyBinanceApiServiceGenerator").newInstance();
       } else {
         generator = (ApiGenerator) Class.forName("com.binance.api.client.impl.BinanceApiServiceGenerator").newInstance();
       }
-      */
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
