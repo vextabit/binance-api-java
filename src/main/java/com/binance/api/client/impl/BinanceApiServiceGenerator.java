@@ -40,8 +40,6 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         sharedClient = builder
                 .dispatcher(dispatcher)
-                .proxyAuthenticator(proxyAuthenticator)
-                .proxy(proxy)
                 .pingInterval(20, TimeUnit.SECONDS)
                 .build();
     }
@@ -57,8 +55,6 @@ public class BinanceApiServiceGenerator implements ApiGenerator {
             OkHttpClient adaptedClient = sharedClient
                     .newBuilder()
                     .addInterceptor(interceptor)
-                    .proxyAuthenticator(proxyAuthenticator)
-                    .proxy(proxy)
                     .build();
             retrofitBuilder.client(adaptedClient);
         }
